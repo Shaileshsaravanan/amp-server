@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Data</title>
+</head>
+<body>
+  <h1>WebSocket Data</h1>
+  <ul id="messages"></ul>
+
+  <script>
+    const ws = new WebSocket('ws://localhost:8080');
+    const messagesList = document.getElementById('messages');
+
+    ws.onmessage = (event) => {
+      const messageItem = document.createElement('li');
+      messageItem.textContent = `Received: ${event.data}`;
+      messagesList.appendChild(messageItem);
+    };
+  </script>
+</body>
+</html>
