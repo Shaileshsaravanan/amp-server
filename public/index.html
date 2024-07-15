@@ -3,17 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Icon Viewer</title>
   <script src="/static/flowbite.js"></script>
   <script src="/static/tailwind.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style src="/static/flowbite.min.css"></style>
 </head>
 <body>
   <h1>WebSocket Data</h1>
   <div id="messages"></div>
-
   <script>
     const ws = new WebSocket('ws://localhost:8080');
     const messageDiv = document.getElementById('messages');
+    const iconContainer = document.getElementById('icon-container');
+    const getIconButton = document.getElementById('getIcon');
+    const fileExtensionInput = document.getElementById('fileExtension');
 
     ws.onmessage = async (event) => {
       if (event.data instanceof Blob) {
@@ -28,6 +32,26 @@
         console.log(`Received: ${event.data}`);
       }
     };
+
+    getIconButton.addEventListener('click', async () => {
+      const extension = fileExtensionInput.value.trim();
+      if (extension) {
+        try {
+          const response = await fetch(`/icons/${extension}`);
+          if (response.ok) {
+            const svg = await response.text();
+            iconContainer.innerHTML = svg;
+          } else {
+            iconContainer.innerHTML = 'Icon not found';
+          }
+        } catch (error) {
+          console.error('Error fetching icon:', error);
+          iconContainer.innerHTML = 'Error fetching icon';
+        }
+      } else {
+        iconContainer.innerHTML = 'Please enter a file extension';
+      }
+    });
   </script>
 </body>
 </html>
