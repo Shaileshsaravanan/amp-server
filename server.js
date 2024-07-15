@@ -13,10 +13,18 @@ wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
     console.log('WebSocket received data: %s', message);
     wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
+      if (client.readyState === WebSocket.OPEN && client !== ws) {
         client.send(message);
       }
     });
+  });
+
+  ws.on('close', () => {
+    console.log('A client disconnected');
+  });
+
+  ws.on('error', (error) => {
+    console.error('WebSocket error:', error);
   });
 });
 
