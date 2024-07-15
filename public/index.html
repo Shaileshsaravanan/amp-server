@@ -5,17 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebSocket with FontAwesome Icons</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="/static/flowbite.js"></script>
+  <script src="/static/tailwind.js"></script>
+  <style src="/static/flowbite.min.css"></style>
 </head>
-<body>
-  <h1>WebSocket with FontAwesome Icons</h1>
-  <div id="icons"></div>
+<body class="bg-gray-100 p-4">
+  <h1 class="text-2xl font-bold mb-4">WebSocket with FontAwesome Icons</h1>
+  <div class="mb-4">
+    <ul id="messages" class="list-disc pl-5 mb-4"></ul>
+    <div id="icons" class="text-xl"></div>
+  </div>
   <script>
     const ws = new WebSocket('ws://localhost:8080');
+    const messagesList = document.getElementById('messages');
+    const iconsDiv = document.getElementById('icons');
 
-    ws.onmessage = function(event) {
-      const data = JSON.parse(event.data);
-      console.log('Received:', data);
-      document.getElementById('icons').innerHTML = `<p>${data.status}</p>`;
+    const iconMap = {
+      js: 'fa-brands fa-js',
+      py: 'fa-brands fa-python',
+      html: 'fa-brands fa-html5',
+      css: 'fa-brands fa-css3-alt',
+      java: 'fa-brands fa-java',
+      react: 'fa-brands fa-react',
+      php: 'fa-brands fa-php',
+      csharp: 'fa-brands fa-csharp',
+      ruby: 'fa-brands fa-gem',
+      go: 'fa-brands fa-go',
+      swift: 'fa-brands fa-swift',
+      sql: 'fa-solid fa-database',
+      c: 'fa-brands fa-cuttlefish',
+      cpp: 'fa-brands fa-cuttlefish',
+      r: 'fa-brands fa-r',
+      bash: 'fa-brands fa-linux',
+      docker: 'fa-brands fa-docker',
+      kotlin: 'fa-brands fa-kotlin',
+      typescript: 'fa-brands fa-js',
+      markdown: 'fa-solid fa-file-alt',
+      json: 'fa-solid fa-code',
+      xml: 'fa-solid fa-code',
+      yaml: 'fa-solid fa-file-alt',
+      ini: 'fa-solid fa-file-alt',
+      dart: 'fa-brands fa-dart',
+      rust: 'fa-brands fa-rust',
+      lua: 'fa-brands fa-lua',
+      elm: 'fa-brands fa-elm',
+      scala: 'fa-brands fa-scala',
+      groovy: 'fa-brands fa-java',
+      objectivec: 'fa-brands fa-apple',
+      htm: 'fa-brands fa-html5',
+      less: 'fa-brands fa-css3-alt',
+      sass: 'fa-brands fa-css3-alt',
+      svg: 'fa-solid fa-image',
+      txt: 'fa-solid fa-file-alt',
+      md: 'fa-solid fa-file-alt',
+      vue: 'fa-brands fa-vuejs',
+      angular: 'fa-brands fa-angular',
+      svelte: 'fa-brands fa-svelte',
+      jpg: 'fa-solid fa-image',
+      jpeg: 'fa-solid fa-image',
+      png: 'fa-solid fa-image',
+      gif: 'fa-solid fa-image',
+      pdf: 'fa-solid fa-file-pdf',
+      zip: 'fa-solid fa-file-archive',
+      tar: 'fa-solid fa-file-archive',
+      gz: 'fa-solid fa-file-archive',
+      '7z': 'fa-solid fa-file-archive',
+      exe: 'fa-solid fa-cogs',
+      app: 'fa-solid fa-cogs',
+      iso: 'fa-solid fa-cogs',
+      dmg: 'fa-solid fa-cogs',
+      ppt: 'fa-solid fa-file-powerpoint',
+      xls: 'fa-solid fa-file-excel',
+      doc: 'fa-solid fa-file-word',
+      docx: 'fa-solid fa-file-word',
+      mp3: 'fa-solid fa-file-audio',
+      wav: 'fa-solid fa-file-audio',
+      mp4: 'fa-solid fa-file-video',
+      avi: 'fa-solid fa-file-video',
+      mkv: 'fa-solid fa-file-video',
+      mov: 'fa-solid fa-file-video',
+      wmv: 'fa-solid fa-file-video',
+      ts: 'fa-brands fa-js',
+      log: 'fa-solid fa-file-alt',
+      sql: 'fa-solid fa-database'
+    };
+
+    const defaultIcon = 'fa-solid fa-file';
+
+    function fetchIcon(fileType) {
+      const fileTypeCleaned = fileType.toLowerCase().replace('.', '');
+      return iconMap[fileTypeCleaned] || defaultIcon;
+    }
+
+    ws.onmessage = async (event) => {
+      if (event.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const message = reader.result;
+          const messageItem = document.createElement('li');
+          const data = JSON.parse(message);
+          const iconClass = fetchIcon(data.fileType);
+          const iconHTML = `<i class="${iconClass}"></i>`;
+          data.status = `${iconHTML} ${data.status}`;
+          messageItem.innerHTML = `Received: ${data.status}`;
+          messagesList.appendChild(messageItem);
+          console.log(`Received: ${data.status}`);
+        };
+        reader.readAsText(event.data);
+      } else {
+        const data = JSON.parse(event.data);
+        const iconClass = fetchIcon(data.fileType);
+        const iconHTML = `<i class="${iconClass}"></i>`;
+        data.status = `${iconHTML} ${data.status}`;
+        iconsDiv.innerHTML = `<p>${data.status}</p>`;
+        console.log(`Received: ${data.status}`);
+
+        const messageItem = document.createElement('li');
+        messageItem.innerHTML = `Received: ${data.status}`;
+        messagesList.appendChild(messageItem);
+      }
     };
   </script>
 </body>
