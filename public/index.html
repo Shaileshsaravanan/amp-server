@@ -3,20 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebSocket Data</title>
+  <script src="/static/flowbite.js"></script>
+  <script src="/static/tailwind.js"></script>
+  <style src="/static/flowbite.min.css"></style>
 </head>
 <body>
   <h1>WebSocket Data</h1>
-  <ul id="messages"></ul>
+  <div id="messages"></div>
 
   <script>
     const ws = new WebSocket('ws://localhost:8080');
-    const messagesList = document.getElementById('messages');
+    const messageDiv = document.getElementById('messages');
 
-    ws.onmessage = (event) => {
-      const messageItem = document.createElement('li');
-      messageItem.textContent = `Received: ${event.data}`;
-      messagesList.appendChild(messageItem);
+    ws.onmessage = async (event) => {
+      if (event.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          messageDiv.textContent = `Received: ${reader.result}`;
+          console.log(`Received: ${reader.result}`);
+        };
+        reader.readAsText(event.data);
+      } else {
+        messageDiv.textContent = `Received: ${event.data}`;
+        console.log(`Received: ${event.data}`);
+      }
     };
   </script>
 </body>
